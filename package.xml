@@ -1,28 +1,27 @@
-<?xml version="1.0"?>
-<package>
-    <name>sweep_ros</name>
+<package format="2">
+    <name>sweep_ros2</name>
     <version>0.2.0</version>
     <description>The sweep_ros package</description>
 
-    <maintainer email="support@scanse.io">Kent Williams</maintainer>
+    <maintainer email="support@scanse.io">Mark Robot</maintainer>
 
     <license>MIT</license>
 
-    <buildtool_depend>catkin</buildtool_depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
     <build_depend>rosconsole</build_depend>
-    <build_depend>roscpp</build_depend>
+    <build_depend>rclcpp</build_depend>
     <build_depend>sensor_msgs</build_depend>
     <build_depend>pcl_conversions</build_depend>
     <build_depend>pcl_msgs</build_depend>
-    <run_depend>pcl_conversions</run_depend>
-    <run_depend>rosconsole</run_depend>
-    <run_depend>roscpp</run_depend>
-    <run_depend>sensor_msgs</run_depend>
-    <run_depend>pointcloud_to_laserscan</run_depend>
+    <exec_depend>pcl_conversions</exec_depend>
+    <exec_depend>rosconsole</exec_depend>
+    <exec_depend>rclcpp</exec_depend>
+    <exec_depend>sensor_msgs</exec_depend>
+    <exec_depend>pointcloud_to_laserscan</exec_depend>
 
     <!-- The export tag contains other, unspecified, tags -->
     <export>
         <!-- Other tools can request additional information be placed here -->
-
+        <build_type>ament_cmake</build_type>
     </export>
 </package>

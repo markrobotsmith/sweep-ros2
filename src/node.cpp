@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include <pcl/point_types.h>
 #include "sensor_msgs/PointCloud2.h"
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <sweep/sweep.hpp>
+//May need to add
+//#include "std_msgs/msg/string.hpp"
 
 void publish_scan(ros::Publisher *pub,
                   const sweep::scan *scan, std::string frame_id)
@@ -73,9 +75,12 @@ void publish_scan(ros::Publisher *pub,
 int main(int argc, char *argv[]) try
 {
     //Initialize Node and handles
-    ros::init(argc, argv, "sweep_node");
-    ros::NodeHandle nh;
-    ros::NodeHandle nh_private("~");
+    //ros::init(argc, argv, "sweep_node");
+    //ros::NodeHandle nh;
+    //ros::NodeHandle nh_private("~");
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("sweep_node", "~");
+    
 
     //Get Serial Parameters
     std::string serial_port;
@@ -95,7 +100,8 @@ int main(int argc, char *argv[]) try
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
 
     //Setup Publisher
-    ros::Publisher scan_pub = nh.advertise<sensor_msgs::PointCloud2>("pc2", 1000);
+    //ros::Publisher scan_pub = nh.advertise<sensor_msgs::PointCloud2>("pc2", 1000);
+    auto scan_pub = node->create_publisher<sensor_msgs::PointCloud2>("pc2", 1000); //NOTE QoS profile can be passed in defauted to rmq_qos_profile_default
 
     //Create Sweep Driver Object
     sweep::sweep device{serial_port.c_str()};
@@ -106,19 +112,22 @@ int main(int argc, char *argv[]) try
     //Send Sample Rate
     device.set_sample_rate(sample_rate);
 
-    ROS_INFO("expected rotation frequency: %d (Hz)", rotation_speed);
+    //ROS_INFO("expected rotation frequency: %d (Hz)", rotation_speed);
+    RCLCPP_INFO(node->get_logger(), "expected rotation frequency: %d (Hz)", rotation_speed);
 
     //Start Scan
     device.start_scanning();
 
-    while (ros::ok())
+    //while (ros::ok())
+    while (rclcpp::ok())
     {
         //Grab Full Scan
         const sweep::scan scan = device.get_scan();
 
         publish_scan(&scan_pub, &scan, frame_id);
 
-        ros::spinOnce();
+        //ros::spinOnce();
+        rclcpp::spin_some(node);
     }
 
     //Stop Scanning & Destroy Driver
